@@ -1,4 +1,4 @@
-# Profiler
+# xaymar::utility::profiler
 A simple but effective way to profile any C++ code.
 
 ## Features
