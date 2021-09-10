@@ -15,13 +15,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        bits: [ 32, 64 ]
+        bits: [ 64 ]
         include:
-          - bits: 32
-            id: windows-x86_32
-            cmake_generator: "Visual Studio 16 2019"
-            cmake_generator_platform: "win32"
-            cmake_system_version: "10.0.18362.0"
           - bits: 64
             id: windows-x86_64
             cmake_generator: "Visual Studio 16 2019"
@@ -60,17 +55,9 @@ jobs:
       fail-fast: true
       matrix:
         ubuntu: [ focal ]
-        bits: [ 32, 64 ]
+        bits: [ 64 ]
         compiler: [ gcc, clang ]
         include:
-          - ubuntu: focal
-            bits: 32
-            compiler: gcc
-            id: ubuntu-20.04-gcc-32
-            compiler-cxx: g++
-            packages: gcc-9 g++-9
-            extra_command: sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
-            extra_flags: "-m32"
           - ubuntu: focal
             bits: 64
             compiler: gcc
@@ -79,13 +66,6 @@ jobs:
             packages: gcc-9 g++-9
             extra_command: sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
             extra_flags: "-m64"
-          - ubuntu: focal
-            bits: 32
-            compiler: clang
-            id: ubuntu-20.04-clang-32
-            compiler-cxx: clang++
-            packages: clang-9
-            extra_flags: "-m32"
           - ubuntu: focal
             bits: 64
             compiler: clang
@@ -139,13 +119,13 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        runner: [ macos-latest ]
+        bits: [ 64 ]
         include:
           - runner: macos-latest
             id: macos-10.15
             target-version: "10.15"
-    name: "MacOS (${{ matrix.target-version }})"
-    runs-on: ${{ matrix.runner }}
+    name: "MacOS ${{ matrix.bits }}bit (${{ matrix.target-version }})"
+    runs-on: macos-latest
     env:
       CMAKE_GENERATOR: "Xcode"
       CMAKE_OSX_DEPLOYMENT_TARGET: "${{ matrix.target-version }}"
