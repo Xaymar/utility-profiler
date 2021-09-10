@@ -15,19 +15,13 @@
 
 #include "xmr/utility/profiler/clock/tsc.hpp"
 
+#if defined(__GNUC__) || defined(__GNUG__)
+#include <cpuid.h>
+#endif
+
 #ifdef _WIN32
 #include <Windows.h>
 #include <vector>
-#endif
-
-#if defined(__GNUC__) || defined(__GNUG__)
-#include <cpuid.h>
-#elif defined(__clang__)
-#include <intrin.h>
-#elif defined(_MSC_VER)
-#include <intrin.h>
-#else
-#include <intrin.h>
 #endif
 
 static bool     tsc_checked      = false;

@@ -20,13 +20,16 @@
 #include "xmr/utility/profiler/profiler.hpp"
 
 #if defined(__GNUC__) || defined(__GNUG__)
-#include <cpuid.h>
+#include <intrin.h>
+#include <x86intrin.h>
 #elif defined(__clang__)
 #include <intrin.h>
+#include <x86intrin.h>
 #elif defined(_MSC_VER)
 #include <intrin.h>
 #else
 #include <intrin.h>
+#include <x86intrin.h>
 #endif
 
 namespace xmr {
