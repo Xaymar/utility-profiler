@@ -3,6 +3,7 @@ A simple but effective way to profile any C++ code.
 
 ## Features
 - Written for C++11 and above.
+- Compatible with Windows (MSVC), Ubuntu (GCC & Clang) and MacOS (XCode).
 - Support for both TSC and HPC based profiling, with TSC frequency detection!
 
 # License
