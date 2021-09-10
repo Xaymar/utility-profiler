@@ -146,13 +146,24 @@ project(
 	HOMEPAGE_URL "https://xaymar.com/"
 )
 
-add_library(${PROJECT_NAME}
-	"include/xmr/utility/profiler.hpp"
-	"include/xmr/utility/hpc_profiler.hpp"
-	"source/xmr/utility/hpc_profiler.cpp"
-	"include/xmr/utility/tsc_profiler.hpp"
-	"source/xmr/utility/tsc_profiler.cpp"
+set(_SOURCE
+	"source/xmr/utility/profiler/profiler.cpp"
+	"source/xmr/utility/profiler/clock/hpc.cpp"
+	"source/xmr/utility/profiler/clock/tsc.cpp"
 )
+set(_INCLUDE
+	"include/xmr/utility/profiler/profiler.hpp"
+	"include/xmr/utility/profiler/clock/hpc.hpp"
+	"include/xmr/utility/profiler/clock/tsc.hpp"
+)
+
+add_library(${PROJECT_NAME}
+	${_SOURCE}
+	${_INCLUDE}
+)
+
+source_group(TREE "${PROJECT_SOURCE_DIR}/source" PREFIX "Sources" FILES ${_SOURCE})
+source_group(TREE "${PROJECT_SOURCE_DIR}/include" PREFIX "Headers" FILES ${_INCLUDE})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 11

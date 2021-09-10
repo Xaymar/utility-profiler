@@ -13,20 +13,4 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.If not, see < https://www.gnu.org/licenses/>.
 
-#ifndef XMR_UTILITY_PROFILER_HPP
-#define XMR_UTILITY_PROFILER_HPP
-#pragma once
-
-#include <cstdint>
-
-namespace xmr {
-	namespace utility {
-		namespace profiler {
-
-		} // namespace profiler
-
-	} // namespace utility
-
-} // namespace xmr
-
-#endif
+#include "xmr/utility/profiler/clock/hpc.hpp"

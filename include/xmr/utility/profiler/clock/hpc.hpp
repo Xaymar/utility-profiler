@@ -13,4 +13,32 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.If not, see < https://www.gnu.org/licenses/>.
 
-#include "xmr/utility/hpc_profiler.hpp"
+#ifndef XMR_UTILITY_PROFILER_CLOCK_HPC_HPP
+#define XMR_UTILITY_PROFILER_CLOCK_HPC_HPP
+#pragma once
+
+#include <chrono>
+#include "xmr/utility/profiler/profiler.hpp"
+
+namespace xmr {
+	namespace utility {
+		namespace profiler {
+			namespace clock {
+				namespace hpc {
+					XMR_UTILITY_PROFILER_FORCEINLINE
+					static uint64_t now()
+					{
+						auto t = std::chrono::high_resolution_clock::now();
+						return std::chrono::duration_cast<std::chrono::nanoseconds>(t.time_since_epoch()).count();
+					}
+				} // namespace hpc
+
+			} // namespace clock
+
+		} // namespace profiler
+
+	} // namespace utility
+
+} // namespace xmr
+
+#endif

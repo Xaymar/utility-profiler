@@ -13,8 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.If not, see < https://www.gnu.org/licenses/>.
 
-#include "xmr/utility/tsc_profiler.hpp"
-#include <stdexcept>
+#include "xmr/utility/profiler/clock/tsc.hpp"
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -118,30 +117,21 @@ static void tsc_initialize()
 	tsc_checked = true;
 }
 
-xmr::utility::profiler::tsc_profiler::tsc_profiler() : _lock(), _timings(), _total_counts(0)
-{
-	tsc_initialize();
-
-	if (!tsc_available) {
-		throw std::runtime_error("TSC is not available on this system.");
-	}
-}
-
-bool xmr::utility::profiler::tsc_profiler::is_available()
+bool xmr::utility::profiler::clock::tsc::is_available()
 {
 	tsc_initialize();
 
 	return tsc_available;
 }
 
-bool xmr::utility::profiler::tsc_profiler::is_invariant()
+bool xmr::utility::profiler::clock::tsc::is_invariant()
 {
 	tsc_initialize();
 
 	return tsc_invariant;
 }
 
-uint64_t xmr::utility::profiler::tsc_profiler::frequency()
+uint64_t xmr::utility::profiler::clock::tsc::frequency()
 {
 	tsc_initialize();
 

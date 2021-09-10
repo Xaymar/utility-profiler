@@ -16,8 +16,9 @@
 #include <cinttypes>
 #include <cstdio>
 #include <iostream>
-#include <xmr/utility/hpc_profiler.hpp>
-#include <xmr/utility/tsc_profiler.hpp>
+#include <xmr/utility/profiler/clock/hpc.hpp>
+#include <xmr/utility/profiler/clock/tsc.hpp>
+#include <xmr/utility/profiler/profiler.hpp>
 
 #define CYCLES_A 10000
 #define CYCLES_B 1000000
@@ -33,34 +34,35 @@ static int32_t work()
 
 void measure_tsc()
 {
-	printf("--------------- TSC @%" PRIu64 "Hz\n", xmr::utility::profiler::tsc_profiler::frequency());
+	printf("--------------- TSC @%" PRIu64 "Hz\n", xmr::utility::profiler::clock::tsc::frequency());
 
-	auto    profiler = xmr::utility::profiler::tsc_profiler();
+	auto profiler = xmr::utility::profiler::profiler();
 	for (int n = 0; n < CYCLES_B; n++) {
-		auto t = profiler.start();
+		auto t = xmr::utility::profiler::clock::tsc::now();
 		work();
-		profiler.stop(t);
+		auto t2 = xmr::utility::profiler::clock::tsc::now();
+		profiler.track(t2, t);
 	}
 
 	printf("Events   %10" PRIu64 "\n", profiler.total_events());
 	printf("Total    %10" PRIu64 "c %10.2fns\n", profiler.total_time(),
-		   xmr::utility::profiler::tsc_profiler::to_nanoseconds(profiler.total_time()));
+		   xmr::utility::profiler::clock::tsc::to_nanoseconds(profiler.total_time()));
 	printf("Average  %10.2fc %10.2fns\n", profiler.average_time(),
-		   xmr::utility::profiler::tsc_profiler::to_nanoseconds(profiler.average_time()));
+		   xmr::utility::profiler::clock::tsc::to_nanoseconds(profiler.average_time()));
 	{
 		auto f = 99.99;
 		auto v = profiler.percentile_events(f / 100);
-		printf("%5.2file %10" PRIu64 "c %10.2fns\n", f, v, xmr::utility::profiler::tsc_profiler::to_nanoseconds(v));
+		printf("%5.2file %10" PRIu64 "c %10.2fns\n", f, v, xmr::utility::profiler::clock::tsc::to_nanoseconds(v));
 	}
 	{
 		auto f = 99.90;
 		auto v = profiler.percentile_events(f / 100);
-		printf("%5.2file %10" PRIu64 "c %10.2fns\n", f, v, xmr::utility::profiler::tsc_profiler::to_nanoseconds(v));
+		printf("%5.2file %10" PRIu64 "c %10.2fns\n", f, v, xmr::utility::profiler::clock::tsc::to_nanoseconds(v));
 	}
 	{
 		auto f = 99.00;
 		auto v = profiler.percentile_events(f / 100);
-		printf("%5.2file %10" PRIu64 "c %10.2fns\n", f, v, xmr::utility::profiler::tsc_profiler::to_nanoseconds(v));
+		printf("%5.2file %10" PRIu64 "c %10.2fns\n", f, v, xmr::utility::profiler::clock::tsc::to_nanoseconds(v));
 	}
 }
 
@@ -68,11 +70,12 @@ void measure_hpc()
 {
 	printf("--------------- HPC\n");
 
-	auto profiler = xmr::utility::profiler::hpc_profiler();
+	auto profiler = xmr::utility::profiler::profiler();
 	for (int n = 0; n < CYCLES_B; n++) {
-		auto t = profiler.start();
+		auto t = xmr::utility::profiler::clock::hpc::now();
 		work();
-		profiler.stop(t);
+		auto t2 = xmr::utility::profiler::clock::hpc::now();
+		profiler.track(t2, t);
 	}
 
 	printf("Events   %10" PRIu64 "\n", profiler.total_events());
@@ -97,19 +100,12 @@ void measure_hpc()
 
 int32_t main(int32_t argc, const char* argv[])
 {
-	if (xmr::utility::profiler::tsc_profiler::is_available() && xmr::utility::profiler::tsc_profiler::is_invariant()) {
+	if (xmr::utility::profiler::clock::tsc::is_available() && xmr::utility::profiler::clock::tsc::is_invariant()) {
 		measure_tsc();
 	} else {
 		printf("No support for invariant TSC, skipping test.\n");
 	}
 	measure_hpc();
-
-	// TSC =    3400000000
-	// ns  =    1000000000
-	// ps  = 1000000000000
-
-	// tsc = 1/3 400 000 000 = 0.294ns
-	// ns  = 1/1 000 000 000 = 1.000ns
 
 	std::cin.get();
 	return 0;
