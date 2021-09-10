@@ -1,0 +1,169 @@
+name: Build
+
+on:
+  push:
+    tags:
+      - '*'
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  windows:
+    strategy:
+      fail-fast: true
+      matrix:
+        bits: [ 32, 64 ]
+        include:
+          - bits: 32
+            id: windows-x86_32
+            cmake_generator: "Visual Studio 16 2019"
+            cmake_generator_platform: "win32"
+            cmake_system_version: "10.0.18362.0"
+          - bits: 64
+            id: windows-x86_64
+            cmake_generator: "Visual Studio 16 2019"
+            cmake_generator_platform: "x64"
+            cmake_system_version: "10.0.18362.0"
+    name: "Windows ${{matrix.bits}}bit"
+    runs-on: windows-2019
+    env:
+      CMAKE_GENERATOR: ${{ matrix.cmake_generator }}
+      CMAKE_GENERATOR_PLATFORM: ${{ matrix.cmake_generator_platform }}
+      CMAKE_SYSTEM_VERSION: ${{ matrix.cmake_system_version }}
+    steps:
+    - name: "Clone"
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+        fetch-depth: 0
+    - name: "Configure"
+      shell: bash
+      run: |
+        cmake -H. -B"build/temp" \
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+          -DCMAKE_INSTALL_PREFIX="build/distrib"
+    - name: "Build"
+      shell: bash
+      run: |
+        cmake --build "build/temp" --config RelWithDebInfo --target INSTALL
+    - name: "Artifacts"
+      uses: actions/upload-artifact@v1
+      with:
+        name: ${{ matrix.id }}
+        path: build/distrib
+
+  ubuntu:
+    strategy:
+      fail-fast: true
+      matrix:
+        ubuntu: [ focal ]
+        bits: [ 32, 64 ]
+        compiler: [ gcc, clang ]
+        include:
+          - ubuntu: focal
+            bits: 32
+            runner: ubuntu-20.04
+            compiler: gcc
+            compiler-cxx: g++
+            packages: gcc-9 g++-9
+            extra_command: sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
+            extra_flags: "-m32"
+          - ubuntu: focal
+            bits: 64
+            runner: ubuntu-20.04
+            compiler: gcc
+            compiler-cxx: g++
+            packages: gcc-9 g++-9
+            extra_command: sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
+            extra_flags: "-m64"
+          - ubuntu: focal
+            bits: 32
+            runner: ubuntu-20.04
+            compiler: clang
+            compiler-cxx: clang++
+            packages: clang-9
+            extra_flags: "-m32"
+          - ubuntu: focal
+            bits: 64
+            runner: ubuntu-20.04
+            compiler: clang
+            compiler-cxx: clang++
+            packages: clang-9
+            extra_flags: "-m64"
+    name: "Ubuntu ${{matrix.bits}}bit"
+    runs-on: ubuntu-20.04
+    env:
+      CC: ${{ matrix.compiler }}
+      CXX: ${{ matrix.compiler-cxx }}
+      CMAKE_GENERATOR: "Ninja"
+    steps:
+    - name: "Clone"
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+        fetch-depth: 0
+    - name: "Configure"
+      shell: bash
+      run: |
+        cmake -H. -B"build/temp" \
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+          -DCMAKE_INSTALL_PREFIX="build/distrib" \
+          -DCMAKE_CXX_FLAGS="${{ matrix.extra_flags }}" \
+          -DCMAKE_C_FLAGS="${{ matrix.extra_flags }}" \
+          -DCMAKE_MODULE_LINKER_FLAGS="${{ matrix.extra_flags }}" \
+          -DCMAKE_SHARED_LINKER_FLAGS="${{ matrix.extra_flags }}" \
+          -DCMAKE_STATIC_LINKER_FLAGS="${{ matrix.extra_flags }}" \
+          -DCMAKE_EXE_LINKER_FLAGS="${{ matrix.extra_flags }}"
+    - name: "Build"
+      shell: bash
+      run: |
+        cmake --build "build/temp" --config RelWithDebInfo --target INSTALL
+    - name: "Artifacts"
+      uses: actions/upload-artifact@v1
+      with:
+        name: ${{ matrix.id }}
+        path: build/distrib
+  macos:
+    strategy:
+      fail-fast: true
+      matrix:
+        runner: [ macos-latest ]
+        include:
+          - runner: macos-latest
+            id: macos-10.15
+            target-version: "10.15"
+    name: "MacOS (${{ matrix.target-version }})"
+    runs-on: ${{ matrix.runner }}
+    env:
+      CMAKE_GENERATOR: "Xcode"
+      CMAKE_OSX_DEPLOYMENT_TARGET: "${{ matrix.target-version }}"
+    steps:
+    - name: "Clone"
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+        fetch-depth: 0
+    - name: "Configure"
+      shell: bash
+      run: |
+        cmake -H. -B"build/temp" \
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+          -DCMAKE_INSTALL_PREFIX="build/distrib" \
+          -DCMAKE_CXX_FLAGS="${{ matrix.extra_flags }}" \
+          -DCMAKE_C_FLAGS="${{ matrix.extra_flags }}" \
+          -DCMAKE_MODULE_LINKER_FLAGS="${{ matrix.extra_flags }}" \
+          -DCMAKE_SHARED_LINKER_FLAGS="${{ matrix.extra_flags }}" \
+          -DCMAKE_STATIC_LINKER_FLAGS="${{ matrix.extra_flags }}" \
+          -DCMAKE_EXE_LINKER_FLAGS="${{ matrix.extra_flags }}"
+    - name: "Build"
+      shell: bash
+      run: |
+        cmake --build "build/temp" --config RelWithDebInfo --target INSTALL
+    - name: "Artifacts"
+      uses: actions/upload-artifact@v1
+      with:
+        name: ${{ matrix.id }}
+        path: build/distrib
