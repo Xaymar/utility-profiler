@@ -139,7 +139,7 @@ endif()
 message(STATUS "${LOGPREFIX}Version ${VERSION_STRING}")
 
 ################################################################################
-# Project
+# Define Library
 ################################################################################
 project(
 	profiler
@@ -148,24 +148,24 @@ project(
 	HOMEPAGE_URL "https://xaymar.com/"
 )
 
-set(_SOURCE
+set(PRIVATE_SOURCE
 	"source/xmr/utility/profiler/profiler.cpp"
 	"source/xmr/utility/profiler/clock/hpc.cpp"
 	"source/xmr/utility/profiler/clock/tsc.cpp"
 )
-set(_INCLUDE
+set(PUBLIC_INCLUDE
 	"include/xmr/utility/profiler/profiler.hpp"
 	"include/xmr/utility/profiler/clock/hpc.hpp"
 	"include/xmr/utility/profiler/clock/tsc.hpp"
 )
 
 add_library(${PROJECT_NAME}
-	${_SOURCE}
-	${_INCLUDE}
+	${PRIVATE_SOURCE}
+	${PUBLIC_INCLUDE}
 )
 
-source_group(TREE "${PROJECT_SOURCE_DIR}/source" PREFIX "Sources" FILES ${_SOURCE})
-source_group(TREE "${PROJECT_SOURCE_DIR}/include" PREFIX "Headers" FILES ${_INCLUDE})
+source_group(TREE "${PROJECT_SOURCE_DIR}/source" PREFIX "Sources" FILES ${PRIVATE_SOURCE})
+source_group(TREE "${PROJECT_SOURCE_DIR}/include" PREFIX "Headers" FILES ${PUBLIC_INCLUDE})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 11
@@ -184,6 +184,31 @@ target_include_directories(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
 	INTERFACE
+)
+
+################################################################################
+# Install Library
+################################################################################
+
+# Binaries
+install(
+	TARGETS ${PROJECT_NAME}
+	EXPORT xaymar::utility::profiler
+	ARCHIVE LIBRARY RUNTIME FRAMEWORK BUNDLE
+	PERMISSIONS WORLD_EXECUTE;WORLD_READ;OWNER_EXECUTE;OWNER_READ;OWNER_WRITE;GROUP_EXECUTE;GROUP_READ;GROUP_WRITE
+)
+if(MSVC AND (BUILD_SHARED_LIBS))
+	install(
+		FILES $<TARGET_PDB_FILE:${PROJECT_NAME}>
+		TYPE BIN
+		OPTIONAL
+	)
+endif()
+
+# Public Headers
+install(
+	DIRECTORY "${PROJECT_SOURCE_DIR}/include/."
+	TYPE INCLUDE
 )
 
 ################################################################################

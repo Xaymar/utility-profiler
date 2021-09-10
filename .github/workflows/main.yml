@@ -65,35 +65,35 @@ jobs:
         include:
           - ubuntu: focal
             bits: 32
-            runner: ubuntu-20.04
             compiler: gcc
+            id: ubuntu-20.04-gcc-32
             compiler-cxx: g++
             packages: gcc-9 g++-9
             extra_command: sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
             extra_flags: "-m32"
           - ubuntu: focal
             bits: 64
-            runner: ubuntu-20.04
             compiler: gcc
+            id: ubuntu-20.04-gcc-64
             compiler-cxx: g++
             packages: gcc-9 g++-9
             extra_command: sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
             extra_flags: "-m64"
           - ubuntu: focal
             bits: 32
-            runner: ubuntu-20.04
             compiler: clang
+            id: ubuntu-20.04-clang-32
             compiler-cxx: clang++
             packages: clang-9
             extra_flags: "-m32"
           - ubuntu: focal
             bits: 64
-            runner: ubuntu-20.04
             compiler: clang
+            id: ubuntu-20.04-clang-64
             compiler-cxx: clang++
             packages: clang-9
             extra_flags: "-m64"
-    name: "Ubuntu ${{matrix.bits}}bit"
+    name: "Ubuntu ${{matrix.bits}}bit (${{matrix.compiler}})"
     runs-on: ubuntu-20.04
     env:
       CC: ${{ matrix.compiler }}
@@ -120,12 +120,13 @@ jobs:
     - name: "Build"
       shell: bash
       run: |
-        cmake --build "build/temp" --config RelWithDebInfo --target INSTALL
+        cmake --build "build/temp" --config RelWithDebInfo --target install
     - name: "Artifacts"
       uses: actions/upload-artifact@v1
       with:
         name: ${{ matrix.id }}
         path: build/distrib
+
   macos:
     strategy:
       fail-fast: true
@@ -161,7 +162,7 @@ jobs:
     - name: "Build"
       shell: bash
       run: |
-        cmake --build "build/temp" --config RelWithDebInfo --target INSTALL
+        cmake --build "build/temp" --config RelWithDebInfo --target install
     - name: "Artifacts"
       uses: actions/upload-artifact@v1
       with:
