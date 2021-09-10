@@ -15,7 +15,7 @@
 
 #include "xmr/utility/profiler/clock/tsc.hpp"
 
-#if defined(__GNUC__) || defined(__GNUG__)
+#if defined(__GNUC__) || defined(__GNUG__) || defined(__clang__)
 #include <cpuid.h>
 #endif
 
@@ -35,7 +35,7 @@ static void tsc_initialize()
 	if (tsc_checked)
 		return;
 
-	int32_t regs[4]              = {0};
+	int     regs[4]              = {0};
 	int32_t max_cpuid_function   = 0;
 	int32_t max_cpuidex_function = 0;
 
