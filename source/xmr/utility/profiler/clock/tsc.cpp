@@ -17,6 +17,9 @@
 
 #if defined(__GNUC__) || defined(__GNUG__) || defined(__clang__)
 #include <cpuid.h>
+#if defined(__clang__) || (defined(__GNUC__) && ((__GNUC__ < 11) || ((__GNUC__ == 11) && (__GNUC_MINOR__ < 1))))
+#define __cpuidex(R, L, S) __cpuid_count(L, S, R[0], R[1], R[2], R[3])
+#endif
 #endif
 
 #ifdef _WIN32
