@@ -18,10 +18,15 @@
 #pragma once
 
 #include "xmr/utility/profiler/profiler.hpp"
-#ifdef WIN32
+
+#if defined(__GNUC__) || defined(__GNUG__)
+#include <cpuid.h>
+#elif defined(__clang__)
+#include <intrin.h>
+#elif defined(_MSC_VER)
 #include <intrin.h>
 #else
-#include <x86intrin.h>
+#include <intrin.h>
 #endif
 
 namespace xmr {
