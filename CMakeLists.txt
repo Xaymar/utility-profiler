@@ -23,6 +23,7 @@ else()
 	set(GROUPED ON)
 	set(PREFIX "XUProfiler_")
 endif()
+set(LOGPREFIX "XUP: ")
 
 ################################################################################
 # Options
@@ -90,11 +91,11 @@ if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/.git")
 				set(VERSION_SUFFIX "")
 			endif()
 		else()
-			message(WARNING "${LOGPREFIX} Failed to detect version, using default instead.")
+			message(WARNING "${LOGPREFIX}Failed to detect version, using default instead.")
 		endif()
 	endif()
 else()
-	message(STATUS "${LOGPREFIX} Not a git repository, automatic version detection disabled.")
+	message(STATUS "${LOGPREFIX}Not a git repository, automatic version detection disabled.")
 endif()
 
 # Allow manual overrides of the detected version.
@@ -135,6 +136,7 @@ if(NOT (VERSION_COMMIT STREQUAL ""))
 else()
 	set(VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.${VERSION_TWEAK}${VERSION_SUFFIX}")
 endif()
+message(STATUS "${LOGPREFIX}Version ${VERSION_STRING}")
 
 ################################################################################
 # Project
