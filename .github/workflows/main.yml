@@ -65,14 +65,12 @@ jobs:
             compiler-cxx: g++
             packages: gcc-9 g++-9
             extra_command: sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
-            extra_flags: "-m64"
           - ubuntu: focal
             bits: 64
             compiler: clang
             id: ubuntu-20.04-clang-64
             compiler-cxx: clang++
             packages: clang-9
-            extra_flags: "-m64"
     name: "Ubuntu ${{matrix.bits}}bit (${{matrix.compiler}})"
     runs-on: ubuntu-20.04
     env:
@@ -98,13 +96,7 @@ jobs:
       run: |
         cmake -H. -B"build/temp" \
           -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-          -DCMAKE_INSTALL_PREFIX="build/distrib" \
-          -DCMAKE_CXX_FLAGS="${{ matrix.extra_flags }}" \
-          -DCMAKE_C_FLAGS="${{ matrix.extra_flags }}" \
-          -DCMAKE_MODULE_LINKER_FLAGS="${{ matrix.extra_flags }}" \
-          -DCMAKE_SHARED_LINKER_FLAGS="${{ matrix.extra_flags }}" \
-          -DCMAKE_STATIC_LINKER_FLAGS="${{ matrix.extra_flags }}" \
-          -DCMAKE_EXE_LINKER_FLAGS="${{ matrix.extra_flags }}"
+          -DCMAKE_INSTALL_PREFIX="build/distrib"
     - name: "Build"
       shell: bash
       run: |
