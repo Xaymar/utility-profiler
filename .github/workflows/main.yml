@@ -105,6 +105,14 @@ jobs:
       with:
         submodules: recursive
         fetch-depth: 0
+    - name: "Prerequisites"
+      shell: bash
+      run: |
+        sudo apt-get -qq update
+        sudo apt-get install \
+          build-essential cmake ninja-build git checkinstall pkg-config \
+          ${{ matrix.packages }}
+        ${{ matrix.extra_command }}
     - name: "Configure"
       shell: bash
       run: |
