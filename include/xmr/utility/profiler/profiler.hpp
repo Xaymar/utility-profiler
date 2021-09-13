@@ -16,40 +16,7 @@
 #ifndef XMR_UTILITY_PROFILER_HPP
 #define XMR_UTILITY_PROFILER_HPP
 #pragma once
-
-// Is Force-Inline enabled?
-#ifndef XMR_UTILITY_PROFILER_FORCEINLINE
-#ifdef XMR_UTILITY_PROFILER_ENABLE_FORCEINLINE
-#if defined(__GNUC__) || defined(__GNUG__)
-#define XMR_UTILITY_PROFILER_FORCEINLINE __attribute__((always_inline))
-#elif defined(__clang__)
-#define XMR_UTILITY_PROFILER_FORCEINLINE __attribute__((always_inline))
-#elif defined(_MSC_VER)
-#define XMR_UTILITY_PROFILER_FORCEINLINE __forceinline
-#else
-#define XMR_UTILITY_PROFILER_FORCEINLINE inline
-#endif
-#else
-#define XMR_UTILITY_PROFILER_FORCEINLINE inline
-#endif
-#endif
-
-// Is Force-Exline disabled?
-#ifndef XMR_UTILITY_PROFILER_NOINLINE
-#ifndef XMR_UTILITY_PROFILER_DISABLE_NOINLINE
-#if defined(__GNUC__) || defined(__GNUG__)
-#define XMR_UTILITY_PROFILER_NOINLINE __attribute__((noinline)) inline
-#elif defined(__clang__)
-#define XMR_UTILITY_PROFILER_NOINLINE __attribute__((noinline)) inline
-#elif defined(_MSC_VER)
-#define XMR_UTILITY_PROFILER_NOINLINE __declspec(noinline) inline
-#else
-#define XMR_UTILITY_PROFILER_NOINLINE
-#endif
-#else
-#define XMR_UTILITY_PROFILER_NOINLINE
-#endif
-#endif
+#include "xmr/utility/profiler/config.hpp"
 
 #include <map>
 #include <mutex>

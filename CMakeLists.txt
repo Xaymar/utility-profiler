@@ -30,6 +30,8 @@ set(LOGPREFIX "XUP: ")
 ################################################################################
 set(${PREFIX}BUILD_EXAMPLES ON CACHE BOOL "Build Examples")
 set(${PREFIX}BUILD_TESTS ON CACHE BOOL "Build Tests")
+set(${PREFIX}DISABLE_NOINLINE OFF CACHE BOOL "Disable force-exlining code in supported compilers.")
+set(${PREFIX}ENABLE_FORCEINLINE ON CACHE BOOL "Enable force-inlining code in supported compilers.")
 
 ################################################################################
 # Versioning
@@ -138,7 +140,7 @@ endif()
 message(STATUS "${LOGPREFIX}Version ${VERSION_STRING}")
 
 ################################################################################
-# Define Library
+# Define Project
 ################################################################################
 project(
 	xmr_utility_profiler
@@ -147,24 +149,56 @@ project(
 	HOMEPAGE_URL "https://xaymar.com/"
 )
 
-set(PRIVATE_SOURCE
+################################################################################
+# Define Library
+################################################################################
+set(PROJECT_SOURCES
 	"source/xmr/utility/profiler/profiler.cpp"
 	"source/xmr/utility/profiler/clock/hpc.cpp"
 	"source/xmr/utility/profiler/clock/tsc.cpp"
 )
-set(PUBLIC_INCLUDE
+set(PROJECT_HEADERS
 	"include/xmr/utility/profiler/profiler.hpp"
 	"include/xmr/utility/profiler/clock/hpc.hpp"
 	"include/xmr/utility/profiler/clock/tsc.hpp"
 )
-
-add_library(${PROJECT_NAME}
-	${PRIVATE_SOURCE}
-	${PUBLIC_INCLUDE}
+set(PROJECT_TEMPLATES
+	"templates/config.hpp.in"
+)
+set(PROJECT_GENERATED
 )
 
-source_group(TREE "${PROJECT_SOURCE_DIR}/source" PREFIX "Sources" FILES ${PRIVATE_SOURCE})
-source_group(TREE "${PROJECT_SOURCE_DIR}/include" PREFIX "Headers" FILES ${PUBLIC_INCLUDE})
+# Generate config.hpp {
+	if (${${PREFIX}ENABLE_FORCEINLINE})
+		set(XMR_UTILITY_PROFILER_ENABLE_FORCEINLINE 1)
+	endif()
+	if (${${PREFIX}DISABLE_NOINLINE})
+		set(XMR_UTILITY_PROFILER_DISABLE_NOINLINE 1)
+	endif()
+	if (${BUILD_SHARED_LIBS})
+		set(XMR_UTILITY_PROFILER_SHARED_LIBRARY 1)
+	endif()
+	configure_file(
+		"templates/config.hpp.in"
+		"generated/xmr/utility/profiler/config.hpp"
+		@ONLY
+	)
+	list(APPEND PROJECT_GENERATED
+		"${PROJECT_BINARY_DIR}/generated/xmr/utility/profiler/config.hpp"
+	)
+# }
+
+add_library(${PROJECT_NAME}
+	${PROJECT_SOURCES}
+	${PROJECT_HEADERS}
+	${PROJECT_TEMPLATES}
+	${PROJECT_GENERATED}
+)
+
+source_group(TREE "${PROJECT_SOURCE_DIR}/source" PREFIX "Sources" FILES ${PROJECT_SOURCES})
+source_group(TREE "${PROJECT_SOURCE_DIR}/include" PREFIX "Headers" FILES ${PROJECT_HEADERS})
+source_group(TREE "${PROJECT_SOURCE_DIR}/templates" PREFIX "Templates" FILES ${PROJECT_TEMPLATES})
+source_group(TREE "${PROJECT_BINARY_DIR}/generated" PREFIX "Generated" FILES ${PROJECT_GENERATED})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 11
@@ -176,14 +210,24 @@ target_include_directories(${PROJECT_NAME}
 	PRIVATE
 		"${PROJECT_SOURCE_DIR}/source"
 		"${PROJECT_SOURCE_DIR}/include"
+		"${PROJECT_BINARY_DIR}/generated"
 	INTERFACE
 		"$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
+		"$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/generated>"
 		"$<INSTALL_INTERFACE:include>"
 )
 
 target_link_libraries(${PROJECT_NAME}
 	INTERFACE
 )
+
+if (BUILD_SHARED_LIBS)
+	target_compile_definitions(${PROJECT_NAME}
+		PRIVATE
+			XMR_UTILITY_PROFILER_DO_LIBRARY_EXPORT
+		INTERFACE
+	)
+endif()
 
 ################################################################################
 # Install Library
@@ -207,6 +251,12 @@ endif()
 # Public Headers
 install(
 	DIRECTORY "${PROJECT_SOURCE_DIR}/include/."
+	TYPE INCLUDE
+)
+
+# Install config.hpp
+install(
+	DIRECTORY "${PROJECT_BINARY_DIR}/generated/."
 	TYPE INCLUDE
 )
 

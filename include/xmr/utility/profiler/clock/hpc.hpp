@@ -19,13 +19,14 @@
 
 #include <chrono>
 #include "xmr/utility/profiler/profiler.hpp"
+#include "xmr/utility/profiler/config.hpp"
 
 namespace xmr {
 	namespace utility {
 		namespace profiler {
 			namespace clock {
 				namespace hpc {
-					XMR_UTILITY_PROFILER_FORCEINLINE
+					XMR_UTILITY_PROFILER_INLINE
 					static uint64_t now()
 					{
 						auto t = std::chrono::high_resolution_clock::now();

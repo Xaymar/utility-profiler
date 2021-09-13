@@ -1,0 +1,98 @@
+// Copyright(C) 2021 Michael Fabian Dirks
+//
+// This program is free software : you can redistribute it and /or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.If not, see < https://www.gnu.org/licenses/>.
+
+#ifndef XMR_UTILITY_PROFILER_CONFIG_HPP
+#define XMR_UTILITY_PROFILER_CONFIG_HPP
+#pragma once
+
+#include <cinttypes>
+#include <cstddef>
+
+// Version Information
+#define XMR_UTILITY_PROFILER_MAKE_VERSION (A, B, C, D) ((static_cast<uint64_t>(A) << 48ull) | (static_cast<uint64_t>(B) << 32ull) | (static_cast<uint64_t>(C) << 16ull) | (static_cast<uint64_t>(D) << 16ull))
+#define XMR_UTILITY_PROFILER_VERSION_STRING "@VERSION_STRING@"
+#define XMR_UTILITY_PROFILER_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
+#define XMR_UTILITY_PROFILER_VERSION_MINOR @PROJECT_VERSION_MINOR@
+#define XMR_UTILITY_PROFILER_VERSION_PATCH @PROJECT_VERSION_PATCH@
+#define XMR_UTILITY_PROFILER_VERSION_TWEAK @PROJECT_VERSION_TWEAK@
+#define XMR_UTILITY_PROFILER_VERSION_SUFFIX "@VERSION_SUFFIX@"
+#define XMR_UTILITY_PROFILER_VERSION_COMMIT "@VERSION_COMMIT@"
+#define XMR_UTILITY_PROFILER_VERSION XMR_UTILITY_PROFILER_MAKE_VERSION(XMR_UTILITY_PROFILER_VERSION_MAJOR, XMR_UTILITY_PROFILER_VERSION_MINOR, XMR_UTILITY_PROFILER_VERSION_PATCH, XMR_UTILITY_PROFILER_VERSION_TWEAK)
+
+// Is Force-Inline enabled?
+#cmakedefine XMR_UTILITY_PROFILER_ENABLE_FORCEINLINE
+#ifndef XMR_UTILITY_PROFILER_INLINE
+	#ifdef XMR_UTILITY_PROFILER_ENABLE_FORCEINLINE
+		#if defined(__GNUC__) || defined(__GNUG__)
+			#define XMR_UTILITY_PROFILER_INLINE __attribute__((always_inline))
+		#elif defined(__clang__)
+			#define XMR_UTILITY_PROFILER_INLINE __attribute__((always_inline))
+		#elif defined(_MSC_VER)
+			#define XMR_UTILITY_PROFILER_INLINE __forceinline
+		#else
+			#define XMR_UTILITY_PROFILER_INLINE inline
+		#endif
+	#else
+		#define XMR_UTILITY_PROFILER_INLINE inline
+	#endif
+#endif
+
+// Is Force-Exline disabled?
+#cmakedefine XMR_UTILITY_PROFILER_DISABLE_NOINLINE
+#ifndef XMR_UTILITY_PROFILER_NOINLINE
+	#ifndef XMR_UTILITY_PROFILER_DISABLE_NOINLINE
+		#if defined(__GNUC__) || defined(__GNUG__)
+			#define XMR_UTILITY_PROFILER_NOINLINE __attribute__((noinline)) inline
+		#elif defined(__clang__)
+			#define XMR_UTILITY_PROFILER_NOINLINE __attribute__((noinline)) inline
+		#elif defined(_MSC_VER)
+			#define XMR_UTILITY_PROFILER_NOINLINE __declspec(noinline) inline
+		#else
+			#define XMR_UTILITY_PROFILER_NOINLINE
+		#endif
+	#else
+		#define XMR_UTILITY_PROFILER_NOINLINE
+	#endif
+#endif
+
+// Is this a shared library?
+#cmakedefine XMR_UTILITY_PROFILER_SHARED_LIBRARY
+#ifndef XMR_UTILITY_PROFILER_SHARED_LIBRARY
+	#define XMR_UTILITY_PROFILER_LIBRARY_EXPORT
+#else
+	#ifdef XMR_UTILITY_PROFILER_DO_LIBRARY_EXPORT
+		#if defined(__GNUC__) || defined(__GNUG__)
+			#define XMR_UTILITY_PROFILER_LIBRARY_EXPORT __attribute__ ((dllexport))
+		#elif defined(__clang__)
+			#define XMR_UTILITY_PROFILER_LIBRARY_EXPORT __attribute__ ((dllexport))
+		#elif defined(_MSC_VER)
+			#define XMR_UTILITY_PROFILER_LIBRARY_EXPORT __declspec(dllexport)
+		#else
+			#define XMR_UTILITY_PROFILER_LIBRARY_EXPORT
+		#endif
+	#else
+		#if defined(__GNUC__) || defined(__GNUG__)
+			#define XMR_UTILITY_PROFILER_LIBRARY_EXPORT __attribute__ ((dllimport))
+		#elif defined(__clang__)
+			#define XMR_UTILITY_PROFILER_LIBRARY_EXPORT __attribute__ ((dllimport))
+		#elif defined(_MSC_VER)
+			#define XMR_UTILITY_PROFILER_LIBRARY_EXPORT __declspec(dllimport)
+		#else
+			#define XMR_UTILITY_PROFILER_LIBRARY_EXPORT
+		#endif
+	#endif
+#endif
+
+#endif XMR_UTILITY_PROFILER_CONFIG_HPP

@@ -18,6 +18,7 @@
 #pragma once
 
 #include "xmr/utility/profiler/profiler.hpp"
+#include "xmr/utility/profiler/config.hpp"
 
 #if defined(__GNUC__) || defined(__GNUG__)
 #include <x86intrin.h>
@@ -38,7 +39,7 @@ namespace xmr {
 					 * 
 					 * @return true if available, otherwise false
 					 */
-					bool is_available();
+					XMR_UTILITY_PROFILER_LIBRARY_EXPORT bool is_available();
 
 					/** Check if TSC is invariant.
 					 *
@@ -46,7 +47,7 @@ namespace xmr {
 					 * 
 					 * @return true if invariant, otherwise false
 					 */
-					bool is_invariant();
+					XMR_UTILITY_PROFILER_LIBRARY_EXPORT bool is_invariant();
 
 					/** Get the TSC frequency in Hz
 					 *
@@ -54,9 +55,9 @@ namespace xmr {
 					 * 
 					 * @return Best match frequency in Hz of the TSC.
 					 */
-					uint64_t frequency();
+					XMR_UTILITY_PROFILER_LIBRARY_EXPORT uint64_t frequency();
 
-					XMR_UTILITY_PROFILER_FORCEINLINE
+					XMR_UTILITY_PROFILER_INLINE
 					uint64_t now()
 					{
 #ifdef XMR_UTILITY_PROFILER_USE_RDTSC
