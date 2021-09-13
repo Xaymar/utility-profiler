@@ -58,7 +58,7 @@ namespace xmr {
 					XMR_UTILITY_PROFILER_LIBRARY_EXPORT uint64_t frequency();
 
 					XMR_UTILITY_PROFILER_INLINE
-					uint64_t now()
+					static uint64_t now()
 					{
 #ifdef XMR_UTILITY_PROFILER_USE_RDTSC
 						return __rdtsc();
