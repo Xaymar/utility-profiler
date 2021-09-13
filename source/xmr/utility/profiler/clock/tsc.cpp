@@ -17,9 +17,11 @@
 
 #if defined(__GNUC__) || defined(__GNUG__) || defined(__clang__)
 #include <cpuid.h>
-#if defined(__clang__) || (defined(__GNUC__) && ((__GNUC__ < 11) || ((__GNUC__ == 11) && (__GNUC_MINOR__ < 1))))
-#define __cpuidex(R, L, S) __cpuid_count(L, S, R[0], R[1], R[2], R[3])
 #endif
+#if defined(__clang__) || (defined(__GNUC__) && ((__GNUC__ < 11) || ((__GNUC__ == 11) && (__GNUC_MINOR__ < 1))))
+#define cpuidex(R, L, S) __cpuid_count(L, S, R[0], R[1], R[2], R[3])
+#elif defined(_MSC_VER)
+#define cpuidex(R, L, S) __cpuidex(R, L, S)
 #endif
 
 #ifdef _WIN32
@@ -43,9 +45,9 @@ static void tsc_initialize()
 	int32_t max_cpuidex_function = 0;
 
 	{ // Check the limits of CPUID and CPUIDEX
-		__cpuidex(regs, 0x0, 0x0);
+		cpuidex(regs, 0x0, 0x0);
 		max_cpuid_function = regs[0];
-		__cpuidex(regs, 0x80000000, 0x0);
+		cpuidex(regs, 0x80000000, 0x0);
 		max_cpuidex_function = regs[0];
 	}
 
@@ -73,19 +75,19 @@ static void tsc_initialize()
 		 * * LAHFandSAHFarealwaysavailableinothermodes,regardlessoftheenumerationofthisfeatureflag.
 		 * ** Intel processors support SYSCALL and SYSRET only in 64-bit mode. This feature flag is always enumerated as 0 outside 64-bit mode.
 		 */
-		__cpuidex(regs, 0x80000001, 0x0);
+		cpuidex(regs, 0x80000001, 0x0);
 		tsc_available = ((regs[3] >> 27) & 1) != 0;
 	}
 
 	if (tsc_available && (max_cpuidex_function >= 0x80000007)) { // Is the TSC invariant?
-		__cpuidex(regs, 0x80000007, 0x0);
+		cpuidex(regs, 0x80000007, 0x0);
 		tsc_invariant = ((regs[3] >> 8) & 1) != 0;
 	}
 
 	if (tsc_available) { // Figure out TSC frequency if possible.
 
 		if ((tsc_frequency_hz == 0) && (max_cpuid_function >= 0x15)) { // CPUID 0x15: Core Crystal Clock
-			__cpuidex(regs, 0x15, 0x0);
+			cpuidex(regs, 0x15, 0x0);
 			if ((regs[0] != 0) && (regs[1] != 0) && (regs[2] != 0)) {
 				// We have TSC information from CPUID.
 				tsc_frequency_hz = (regs[2] * regs[0]) / regs[1];
@@ -94,7 +96,7 @@ static void tsc_initialize()
 
 		if ((tsc_frequency_hz == 0)
 			&& (max_cpuid_function >= 0x16)) { // CPUID 0x16: Base Frequency, Maximum Frequency, Bus Frequency, ...
-			__cpuidex(regs, 0x16, 0x0);
+			cpuidex(regs, 0x16, 0x0);
 			if ((regs[0] & 0xFFFF) != 0) {
 				tsc_frequency_hz = static_cast<uint64_t>(regs[0] & 0xFFFF) * 1000000;
 			}
