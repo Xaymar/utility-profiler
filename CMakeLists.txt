@@ -31,7 +31,6 @@ set(LOGPREFIX "XUP: ")
 set(${PREFIX}BUILD_EXAMPLES ON CACHE BOOL "Build Examples")
 set(${PREFIX}BUILD_TESTS ON CACHE BOOL "Build Tests")
 
-
 ################################################################################
 # Versioning
 ################################################################################
@@ -142,7 +141,7 @@ message(STATUS "${LOGPREFIX}Version ${VERSION_STRING}")
 # Define Library
 ################################################################################
 project(
-	profiler
+	xmr_utility_profiler
 	VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.${VERSION_TWEAK}
 	DESCRIPTION "Simple but effective way to profile code."
 	HOMEPAGE_URL "https://xaymar.com/"
@@ -193,7 +192,7 @@ target_link_libraries(${PROJECT_NAME}
 # Binaries
 install(
 	TARGETS ${PROJECT_NAME}
-	EXPORT xaymar::utility::profiler
+	EXPORT xmr::utility::profiler
 	ARCHIVE LIBRARY RUNTIME FRAMEWORK BUNDLE
 	PERMISSIONS WORLD_EXECUTE;WORLD_READ;OWNER_EXECUTE;OWNER_READ;OWNER_WRITE;GROUP_EXECUTE;GROUP_READ;GROUP_WRITE
 )

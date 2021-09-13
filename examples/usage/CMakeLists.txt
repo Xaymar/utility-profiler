@@ -36,5 +36,7 @@ target_include_directories(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
 	PRIVATE
-		profiler
+		xmr_utility_profiler
 )
+
+add_dependencies(examples example_usage)
